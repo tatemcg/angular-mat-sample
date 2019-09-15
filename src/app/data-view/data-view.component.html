@@ -1,0 +1,62 @@
+
+
+<div>
+    <form>
+        <mat-form-field id="dropdown1">
+            <mat-label><h4>Continent</h4></mat-label>
+            <br />
+            <br />
+            <mat-select [(ngModel)]="selectedSource" name="food" (selectionChange)="changeSources($event.value)">
+                <mat-option *ngFor="let source of dataSources" [value]="source.id">
+                    {{source.sourceName}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field id="dropdown2">
+            <mat-label><h4>Country</h4></mat-label>
+            <br />
+            <br />
+            <mat-select [(ngModel)]="selectedType" name="foods" (selectionChange)="changeCountryType($event.value)">
+                <mat-option *ngFor="let countryType of countryTypes" [value]="countryType.id">
+                    {{countryType.countryType}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</div>
+
+<div>
+    <mat-drawer-container class="example-container">
+        <mat-drawer class="insideDiv" #sideNav mode="side" opened="true" [position]="nav_position">
+            Population Year
+            <ul style="list-style-type:none;">
+                <li>
+                    <mat-checkbox id="year2000" [(ngModel)]="twoThousandChecked" (change)="onYearCheckboxChange($event, '2000')"> 2000 </mat-checkbox>
+                </li>
+                <li>
+                    <mat-checkbox [(ngModel)]="twoThousand10Checked" (change)="onYearCheckboxChange($event, '2010')"> 2010</mat-checkbox>
+                </li>
+            </ul>
+            Gender
+            <ul style="list-style-type:none;">
+                <li>
+                    <mat-checkbox id="femaleCheckBox" [(ngModel)]="femaleChecked" (change)="onGenderCheckboxChange($event, 'female')"> Female </mat-checkbox>
+                </li>
+                <li>
+                    <mat-checkbox [(ngModel)]="maleChecked" (change)="onGenderCheckboxChange($event, 'male')"> Male</mat-checkbox>
+                </li>
+            </ul>
+        </mat-drawer>
+        <mat-drawer-content>
+            <button class="expandCollapseBTN" (click)="sideNav.toggle()" mat-button> Expand/Collapse </button>
+            <div #dataViewNode id="dataNode">
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <h3>Here is your data for {{selectedType}} and {{yearNum}} and {{genderChoice}}</h3>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>
