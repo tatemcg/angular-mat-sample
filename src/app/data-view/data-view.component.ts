@@ -27,12 +27,12 @@ export class DataViewComponent implements OnInit, OnChanges {
   changeSources(data) {
     alert("Continent " + data);
     console.log("Continent " + this.selectedSource);
-    this.showSelectedDataView(this.selectedSource, this.selectedType);
+    this.showSelectedDataView(this.selectedSource, this.selectedType, this.yearNum);
   }
   changeCountryType(data) {
     alert("Country Selected" + data);
     console.log("Country Selected " + this.selectedType);
-    this.showSelectedDataView(this.selectedSource, this.selectedType);
+    this.showSelectedDataView(this.selectedSource, this.selectedType, this.yearNum);
   }
 
   public yearNum = []; twoThousandChecked; twoThousand7Checked;
@@ -51,7 +51,7 @@ export class DataViewComponent implements OnInit, OnChanges {
         this.yearNum = [...this.yearNum];
       }
     }
-    this.showSelectedDataView(this.selectedSource, this.selectedType);
+    this.showSelectedDataView(this.selectedSource, this.selectedType, this.yearNum);
     console.log("Year List " + this.yearNum);
   }
   onGenderCheckboxChange(event, value) {
@@ -66,15 +66,15 @@ export class DataViewComponent implements OnInit, OnChanges {
         this.genderChoice.splice(index, 1);
       }
     }
-    this.showSelectedDataView(this.selectedSource, this.selectedType);
-    console.log("Gender List " + this.genderChoice);
+    this.showSelectedDataView(this.selectedSource, this.selectedType, this.yearNum);
+    console.log("Gender List: " + this.genderChoice);
   }
   ngOnInit() {
   }
   ngOnChanges() {
-    this.showSelectedDataView(this.selectedSource, this.selectedType);
+    this.showSelectedDataView(this.selectedSource, this.selectedType, this.yearNum);
   }
-  showSelectedDataView(selectedSource: string, selectedType: string) {
+  showSelectedDataView(selectedSource: string, selectedType: string, yearNum: any) {
     if (this.selectedSource === 'id1' && this.selectedType === 'id1') {
       alert("You Selected Data For " + this.selectedSource + " " + this.selectedType)
       console.log(" North America and Canada");
@@ -87,9 +87,16 @@ export class DataViewComponent implements OnInit, OnChanges {
       alert("You Selected Data For " + this.selectedSource + " " + this.selectedType)
       console.log(" North America and United States");
     }
-    else if (this.selectedSource === 'id1' && this.selectedType === 'id1' && this.yearNum === this.twoThousandChecked) {
-      alert("You Selected Data For " + this.selectedSource + " " + this.selectedType + " and Year " + this.yearNum)
-      console.log(" North America and Canada and 2000");
+    else if (this.selectedSource === 'id1' && this.selectedType === 'id1') {
+      for(var i = 0; i < yearNum.length(); i++)
+      {
+        if(yearNum[i] === '2000')
+        {
+          alert("You Selected Data For " + this.selectedSource + " " + this.selectedType + " and Year " + this.yearNum)
+          console.log(" North America and Canada and 2000 ");
+        }
+      }
+     
     }
     else if (this.selectedSource === 'id1' && this.selectedType === 'id1' && this.yearNum === this.twoThousandChecked && this.genderChoice === this.maleChecked) {
       alert("You Selected Data For " + this.selectedSource + " " + this.selectedType + " and Year " + this.yearNum + " and for " + this.genderChoice)
