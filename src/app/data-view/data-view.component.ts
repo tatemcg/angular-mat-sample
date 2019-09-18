@@ -9,8 +9,6 @@ export class DataViewComponent implements OnInit, OnChanges{
 
    
 
-    events: string[] = [];
-    opened: boolean;
     public selectedSource: string;
     public selectedType: string;
  
