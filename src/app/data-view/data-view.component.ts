@@ -27,12 +27,12 @@ export class DataViewComponent implements OnInit, OnChanges{
     changeSources(data) {
         alert("Continent " + data);
         console.log("Continent " + this.selectedSource);
-
+        this.showSelectedDataView(this.selectedSource, this.selectedType);
     }
     changeCountryType(data) {
         alert("Country Selected" + data);
         console.log("Country Selected " + this.selectedType);
-
+        this.showSelectedDataView(this.selectedSource, this.selectedType);
     }
 
     public yearNum = []; twoThousandChecked; twoThousand7Checked;
@@ -69,9 +69,9 @@ export class DataViewComponent implements OnInit, OnChanges{
     ngOnInit() {
     }
     ngOnChanges() {
-        this.showSelectedDataView();
+        this.showSelectedDataView(this.selectedSource, this.selectedType);
     }
-    showSelectedDataView() {
+    showSelectedDataView(selectedSource: string, selectedType: string) {
         if (this.selectedSource === 'id1' && this.selectedType === 'id1') {
             alert("You Selected Data For " + this.selectedSource + " " + this.selectedType)
             console.log(" North America and Canada");
