@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="description" content="[Highlight features with hover events - 4.11]">
+  <!--
+  ArcGIS API for JavaScript, https://js.arcgis.com
+  For more information about the view-hittest sample, read the original sample description at developers.arcgis.com.
+  https://developers.arcgis.com/javascript/latest/view-hittest/index.html
+  -->
+  <title>Highlight features with hover events - 4.11</title>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 90%;
+      width: 100%;
+    }
+	#viewDiv2{
+		height: 10%;
+	}
+	.tooltip {
+	  position: relative;
+	  display: inline-block;
+	  border-bottom: 1px dotted black;
+	}
+
+	.tooltip .tooltiptext {
+	  visibility: hidden;
+	  width: 120px;
+	  background-color: #555;
+	  color: #fff;
+	  text-align: center;
+	  border-radius: 6px;
+	  padding: 5px 0;
+	  position: absolute;
+	  z-index: 1;
+	  bottom: 125%;
+	  left: 50%;
+	  margin-left: -60px;
+	  opacity: 0;
+	  transition: opacity 0.3s;
+	}
+
+	.tooltip .tooltiptext::after {
+	  content: "";
+	  position: absolute;
+	  top: 100%;
+	  left: 50%;
+	  margin-left: -5px;
+	  border-width: 5px;
+	  border-style: solid;
+	  border-color: #555 transparent transparent transparent;
+	}
+
+	.tooltip:hover .tooltiptext {
+	  visibility: visible;
+	  opacity: 1;
+	}
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/dijit/themes/claro/claro.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+
+  <script>
+    var dialog, dRenderer;
+    require([
+      "esri/core/watchUtils",
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/renderers/UniqueValueRenderer",
+      "esri/symbols/SimpleLineSymbol",
+		"esri/layers/MapImageLayer"
+    ], function (
+      watchUtils,
+      Map,
+      MapView,
+      FeatureLayer,
+      UniqueValueRenderer,
+      SimpleLineSymbol,
+		MapImageLayer
+    ) {
+		//var layerImage = new MapImageLayer({
+          //url:"https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/",
+          //sublayers: [
+            //{
+              //id: 2,
+              //visible: true
+            //}]
+		//})
+      var layer = new FeatureLayer({
+        //url: "https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/BuildingFootprint2D_gdb/FeatureServer/0",
+        url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2",
+		outFields: ["*"]
+      });
+
+      var map = new Map({
+        //basemap: "street-vector",
+        layers: [layer]
+      });
+
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-98.34, 40.28],
+        zoom: 6
+      });
+		view.ui.move("zoom", "top-right");
+      function changeCursor(response) {
+        if (response.results.length > 0) {
+          document.getElementById("viewDiv").style.cursor = "pointer";
+        } else {
+          document.getElementById("viewDiv").style.cursor = "default";
+        }
+      }
+
+      function getGraphics(response) {
+        view.graphics.removeAll();
+        if (response.results.length > 0) {
+          var graphic = response.results[0].graphic;
+          graphic.symbol = 
+		  {
+            type: "simple-fill",
+            style: "solid",
+			color: [ 17, 114, 212, 0.5 ],
+            outline: 
+			{ // autocasts as new SimpleLineSymbol()
+              color: "white",
+              width: 1
+            }
+          }
+          view.graphics.add(graphic);
+        }
+      }
+		
+      view.when(function () 
+	  {
+        view.whenLayerView(layer).then(function (lview) {
+          watchUtils.whenFalseOnce(lview, "updating", function () {
+            // Set up a click event handler and retrieve the screen x, y coordinates
+            view.on("pointer-move", function (evt) 
+			{
+              var screenPoint = {
+                x: evt.x,
+                y: evt.y
+              };
+
+              // the hitTest() checks to see if any graphics in the view
+              // intersect the given screen x, y coordinates
+              view.hitTest(screenPoint)
+                .then(function (response) 
+				{
+					if(response.results.length)
+					{
+					  var graphic = response.results.filter(dataResult =>
+					  {
+						   return dataResult.graphic.layer === layer;
+					  })[0].graphic;
+					  const attributes = graphic.attributes.state_name;
+					  //var FIPS = attributes.state_name;
+					  console.log("FIPS CODE: "+attributes);
+					  //document.getElementById("tooltip").innerHTML = attributes;
+					  //attributes.municipality_name +" is: "+ attributes.municipality_2010_population;
+					}
+                  changeCursor(response);
+                  getGraphics(response);
+                });
+            });
+			view.on("click", function(event)
+			{
+				var pointXY = {
+				 x: event.x,
+				 y: event.y
+				};
+
+				view.hitTest(pointXY).then(response =>
+				{
+					//console.log("REspone: "+response);
+				 if(response.results.length)
+				 {
+					  var graphic = response.results.filter(dataResult =>
+					  {
+						   return dataResult.graphic.layer === layer;
+					  })[0].graphic;
+					  const attributes = graphic.attributes;
+					  document.getElementById("TotalPopData").innerHTML = "Total Population " +
+						  attributes.state_name +" is: "+ attributes.pop2000 ;
+						
+				 }
+				});
+			});
+          });
+        });
+      });
+		
+	  
+    });
+  </script>
+</head>
+
+<body>
+	<div id="viewDiv2"></div>
+	<div id="viewDiv"></div>
+    <div id="TotalPopData" style="font-weight: bold">
+	</div>
+	<div class="tooltip">
+		<span class="tooltiptext">Tooltip text</span>
+	</div>
+</body>
+
+</html>
